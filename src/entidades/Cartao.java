@@ -15,6 +15,22 @@ public class Cartao extends EntidadeBasica {
 	private Date fimAplicacao;
 	private float valorMulta;
 	private Atleta atleta;
+	private String descricao;
+	
+	
+	
+	public Atleta getAtleta() {
+		return atleta;
+	}
+	public void setAtleta(Atleta atleta) {
+		this.atleta = atleta;
+	}
+	public String getDescricao() {
+		return descricao;
+	}
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
 	public CartoesEnum getCartao() {
 		return cartao;
 	}

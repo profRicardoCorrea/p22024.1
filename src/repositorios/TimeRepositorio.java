@@ -1,41 +1,50 @@
 package repositorios;
- 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import entidades.Time;
-public class TimeRepositorio {
+import interfaces.ITimeRepositorio;
+public class TimeRepositorio extends BaseRepositorio<Time> implements ITimeRepositorio {
+
+	public TimeRepositorio(ArrayList<Time> bdE) {
+		super(bdE);		
+	}
+
+	@Override
+	public ArrayList<Time> persquisarPorNome(String nome) {
+		ArrayList<Time> timesEncontrados=new ArrayList<Time>();
+		for (Time time : bdE) {
+            if (time.getNome().equals(nome)) {
+            	timesEncontrados.add(time);
+            }
+        }
+        return timesEncontrados;
+	}
 	 
 
-    public TimeRepositorio() {
-        
-    }
+	@Override
+	public void atualizar(Time timeAtulizadao) {
+		for (int i = 0; i < bdE.size(); i++) {
+            if (bdE.get(i).getCodigo() == timeAtulizadao.getCodigo()) {
+            	bdE.set(i, timeAtulizadao);
+                break;
+            }
+        }		
+	}
 
-    // Método para adicionar um novo estudante ao banco de dados
-    public void adicionar(Time time) {
-        
-    }
+	@Override
+	public boolean remover(Time time) {
+		return bdE.removeIf(cartao -> cartao.getCodigo()== time.getCodigo());
+	}
 
-    // Método para buscar um estudante pelo ID
-    public Time buscarPorId(Long id) {
-        return null;
-    }
-
-    // Método para listar todos os estudantes no banco de dados
-    public List<Time> listarTimes() {
-        
-        return null;
-    }
-
-    // Método para atualizar um estudante
-    public void atualizarTime(Time time) {
-         
-    }
-
-    // Método para excluir um estudante
-    public void excluirTime(Long id) {
-         
-    }
-
-     
+	@Override
+	public Time listarPorCodigo(long codigo) {
+		for (Time time : bdE) {
+            if (time.getCodigo()== codigo) {
+            	 return time;
+            }
+        }
+		return null;
+	}     
 }

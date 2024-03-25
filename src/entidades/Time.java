@@ -9,7 +9,11 @@ public class Time extends EntidadeBasica   {
 	private String nome;
 	private Date dataNascimento;
 	private Atleta tecnico;
+	private int pontos;
 	
+	
+	
+
 	private ArrayList<Atleta> jogadores = new ArrayList<Atleta>();
 	public Time(String nome) {
 		this.nome=nome;
@@ -24,10 +28,21 @@ public class Time extends EntidadeBasica   {
 		this.tecnico= tecnico;
 		this.dataNascimento=dataNascimento;
 	}
+	public Time(String nome,Date dataNascimento,int pontos) {
+		this.nome=nome;
+		this.pontos= pontos;
+		this.dataNascimento=dataNascimento;
+	}
 	public Time() {
 		
 	}
-	
+	public int getPontos() {
+		return pontos;
+	}
+
+	public void setPontos(int pontos) {
+		this.pontos = pontos;
+	}
 	public String getNome() {
 		return nome;
 	}

@@ -1,42 +1,55 @@
 package repositorios;
  
 
+import java.util.ArrayList;
 import java.util.List;
 
+import entidades.Atleta;
 import entidades.Cartao;
-public class CartaoRepositorio {
-	 
+import interfaces.ICartaoRepositorio;
+public class CartaoRepositorio implements ICartaoRepositorio {
+	private List<Cartao> cartoes = new ArrayList<>();
+	
+	public CartaoRepositorio(List<Cartao> cartoes ) {
+		  this.cartoes = cartoes;
+	}
 
-    public CartaoRepositorio() {
-          }
+	@Override
+	public void salvar(Cartao cartao) {
+		this.cartoes.add(cartao);
+		
+	}
 
-    // Método para adicionar um novo estudante ao banco de dados
-    public void adicionar(Cartao cartao) {
-        
-    }
+	@Override
+	public List<Cartao> listarCartoes() {
+		 return cartoes;
+	}
 
-    // Método para buscar um estudante pelo ID
-    public Cartao buscarPorId(Long id) {
+	@Override
+	public Cartao buscarPorAtleta(Atleta atleta) {
+		for (Cartao cartao : cartoes) {
+            if (cartao.getAtleta().equals(atleta)) {
+                return cartao;
+            }
+        }
         return null;
-    }
+	}
 
-    // Método para listar todos os estudantes no banco de dados
-    public List<Cartao> listarCartoes() {
-         return null;
-    }
+	@Override
+	public void atualizarCartao(Cartao cartaoAtualizado) {
+		for (int i = 0; i < cartoes.size(); i++) {
+            if (cartoes.get(i).getAtleta().equals(cartaoAtualizado.getAtleta())) {
+                cartoes.set(i, cartaoAtualizado);
+                break;
+            }
+        }
+		
+	}
 
-    // Método para atualizar um estudante
-    public void atualizarTime(Cartao cartao) {
-        
-    }
-
-    // Método para excluir um estudante
-    public void excluirTime(Long id) {
-        
-    }
-
-    // Fechar o EntityManagerFactory quando não for mais necessário
-    public void fecharEntityManagerFactory() {
-         
-    }
+	@Override
+	public boolean removerCartao(Atleta atleta) {
+		return cartoes.removeIf(cartao -> cartao.getAtleta().equals(atleta));
+	}
+	 
+ 
 }

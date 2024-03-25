@@ -1,135 +1,119 @@
 package servicos;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import entidades.Time;
+import excecoes.CodigoInvalidoException;
+import excecoes.DataNascimentoInvalidaException;
+import excecoes.NomeTimeInvalidoException;
+import excecoes.PontosInvalidosException;
 import interfaces.ITimeServico;
 import repositorios.TimeRepositorio;
 
- 
+public class TimeServico implements ITimeServico {
 
-public class TimeServico implements ITimeServico{
+	private TimeRepositorio repositorioTime = null;
 
-	private TimeRepositorio repositorioTime= null;
- 
-	
-	public TimeServico() {
-	 
-		this.repositorioTime =   new TimeRepositorio();
+	public TimeServico(TimeRepositorio repositorioTime) {
+		this.repositorioTime = repositorioTime;
 	}
 
 	@Override
-	public void cadastrar(Time time) {
-		
-		if((time.getTecnico()!=null )
-				&& !time.getTecnico().getNome().isBlank()
-				&& !time.getTecnico().getNome().isEmpty() && time.getTecnico().getNome().length()>3) {
-			
-		
-			if(!time.getNome().isBlank() && !time.getNome().isEmpty() 
-					&& time.getNome().length()>=4) {
-				
-				 
-				//time.setCodigo(repositorioTime.gerarCodigo());
-				repositorioTime.adicionar(time);
-				
-			}
-			else {
-				
-				System.out.println("Os dados do time est�o incorretos");
-			}
-			
-		}else {
-			
-			System.out.println("Os dados do tecnico est�o incorretos");
+	public void cadastrar(Time time) throws NomeTimeInvalidoException, DataNascimentoInvalidaException {
+		if (time.getNome() == null || time.getNome().trim().isEmpty() || time.getNome().length() < 4) {
+			throw new NomeTimeInvalidoException("NOME");
 		}
-		
-		
-		
-	}
-
-	@Override
-	public void cadastrar(String nomeTime) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	public void teste() {
-		System.out.println("alguma coisa");
-	}
-	public void teste1() {
-		System.out.println("alguma coisa");
-	}
-
-	@Override
-	public void alterar(Time time) {
-		if((time.getTecnico()!=null )
-				&& !time.getTecnico().getNome().isBlank()
-				&& !time.getTecnico().getNome().isEmpty() && time.getTecnico().getNome().length()>3) {
-			
-		
-			if(!time.getNome().isBlank() && !time.getNome().isEmpty() 
-					&& time.getNome().length()>=4) {
-				
-				 
-				try {
-					repositorioTime.atualizarTime(time);
-				} catch (Exception e) {
-					System.out.println("Erro ao alterar os dados do time");
-				}
-				
-				
-			}
-			else {
-				
-				System.out.println("Os dados do time estao incorretos");
-			}
-			
-		}else {
-			
-			System.out.println("Os dados do tecnico estao incorretos");
+		if (time.getDataNascimento() == null) {
+			throw new DataNascimentoInvalidaException();
 		}
-		 
-		
+
+		if (!time.getNome().isBlank() && !time.getNome().isEmpty() && time.getNome().length() >= 4) {
+			repositorioTime.salvar(time);
+		}
 	}
 
 	@Override
-	public ArrayList<Time> persquisar(String nome) {
-		// TODO Auto-generated method stub
-		return null;
+	public void alterar(Time time) throws NomeTimeInvalidoException, DataNascimentoInvalidaException {
+
+		if (time.getNome() == null || time.getNome().trim().isEmpty() || time.getNome().length() < 4) {
+			throw new NomeTimeInvalidoException("NOME");
+		}
+		if (time.getDataNascimento() == null) {
+			throw new DataNascimentoInvalidaException();
+		}
+		repositorioTime.atualizar(time);
+
 	}
 
 	@Override
-	public void excluir(Time time) {
-		String foiremovido="Time Nao removido!";
-		if(time.getTecnico()==null) {
-			Time timeResult=repositorioTime.buscarPorId(time.getCodigo());
-			if(timeResult!=null)
-				repositorioTime.excluirTime(null);				
-				foiremovido="Time removido!";
+	public ArrayList<Time> persquisar(String nome) throws NomeTimeInvalidoException {
+		if (nome == null || nome.trim().isEmpty() || nome.length() < 4) {
+			throw new NomeTimeInvalidoException("NOME");
+		}
+		return repositorioTime.persquisarPorNome(nome);
+	}
+
+	@Override
+	public boolean excluir(Time time) throws CodigoInvalidoException {
+
+		if (time.getCodigo() > 0) {
+			throw new CodigoInvalidoException();
+		} else {
+
+			Time timeResult = repositorioTime.listarPorCodigo(time.getCodigo());
+			if (timeResult != null) {
+				repositorioTime.remover(time);
+				return true;
 			}
-		 
-		System.out.println(foiremovido);
-		
+			return false;
+		}
+
 	}
-	
+
 	public ArrayList<Time> listarTodosTimes() {
-		 
-		return (ArrayList<Time>) this.repositorioTime.listarTimes();
+
+		return (ArrayList<Time>) this.repositorioTime.listarTodos();
 	}
-	 
-	public Time pesquisarPorCodigo(int codigoTime) {
-		
-		if(codigoTime>0)
-			return repositorioTime.buscarPorId((long)codigoTime);
-		 
+
+	public Time pesquisarPorCodigo(long codigo) {
+
+		if (codigo > 0)
+			return repositorioTime.listarPorCodigo(codigo);
+
 		System.out.println("Codigo Invalido");
 		return null;
-		 
-			
+
 	}
 
-	 
-	
+	@Override
+	public ArrayList<Time> persquisarClassificacao() {
+		List<Time> listaTimes = this.repositorioTime.listarTodos();
+		Collections.sort(listaTimes,
+				(Comparator<? super Time>) (Time t1, Time t2) -> Integer.compare(t2.getPontos(), t1.getPontos()));
+		return (ArrayList<Time>) listaTimes;
+	}
+
+	@Override
+	public void addPontos(long codigo, int pontos)
+			throws PontosInvalidosException, NomeTimeInvalidoException, DataNascimentoInvalidaException {
+		if (pontos < 0) {
+			throw new PontosInvalidosException(pontos);
+		} else {
+			Time resultado;
+			try {
+				resultado = repositorioTime.listarPorCodigo(codigo);
+				resultado.setPontos(pontos);
+				this.alterar(resultado);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+	}
 
 }
