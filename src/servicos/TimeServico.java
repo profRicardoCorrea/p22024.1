@@ -24,7 +24,7 @@ public class TimeServico implements ITimeServico {
 	@Override
 	public void cadastrar(Time time) throws NomeTimeInvalidoException, DataNascimentoInvalidaException {
 		if (time.getNome() == null || time.getNome().trim().isEmpty() || time.getNome().length() < 4) {
-			throw new NomeTimeInvalidoException("NOME");
+			throw new NomeTimeInvalidoException("");
 		}
 		if (time.getDataNascimento() == null) {
 			throw new DataNascimentoInvalidaException();
